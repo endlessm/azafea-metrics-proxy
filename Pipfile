@@ -1,0 +1,11 @@
+[dev-packages]
+flake8-bugbear = "*"
+mypy = ">=0.720"
+pytest = "*"
+pytest-cov = "*"
+pytest-flake8 = "*"
+pytest-mypy = ">=0.3.3"
+
+[scripts]
+lint = "py.test --flake8 --mypy -m 'flake8 or mypy'"
+test = "py.test --cov=eos_metrics_proxy --cov-fail-under=99 --no-cov-on-fail"
