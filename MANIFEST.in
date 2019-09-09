@@ -1,2 +1,2 @@
-include COPYING
+include code-of-conduct.md COPYING
 include pyproject.toml
