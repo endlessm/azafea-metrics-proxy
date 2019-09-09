@@ -18,8 +18,12 @@
 
 from aiohttp.web import Application
 
+from . import metrics
+
 
 def get_app() -> Application:
     app = Application()
+
+    metrics.setup_routes(app)
 
     return app
