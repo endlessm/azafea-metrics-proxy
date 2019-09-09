@@ -14,4 +14,5 @@ aiohttp = ">= 3.5.0"
 [scripts]
 lint = "py.test --flake8 --mypy -m 'flake8 or mypy'"
 proxy = "python -m eos_metrics_proxy"
-test = "py.test --cov=eos_metrics_proxy --cov-fail-under=99 --no-cov-on-fail"
+test = "py.test --cov=eos_metrics_proxy --cov-fail-under=99 --no-cov-on-fail -m 'not integration'"
+test-all = "py.test --cov=eos_metrics_proxy --cov-fail-under=99 --no-cov-on-fail"
