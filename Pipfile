@@ -1,5 +1,6 @@
 [dev-packages]
 flake8-bugbear = "*"
+freezegun = "*"
 mypy = ">=0.720"
 pytest = "*"
 pytest-aiohttp = "*"
