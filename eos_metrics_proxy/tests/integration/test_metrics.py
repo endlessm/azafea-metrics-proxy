@@ -16,7 +16,7 @@
 # along with eos-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import aioredis
+from aioredis import Redis
 
 from freezegun import freeze_time
 
@@ -27,27 +27,24 @@ from eos_metrics_proxy.utils import get_timestamp, utcnow
 
 
 @pytest.fixture()
-async def redis():
-    url = f'redis://:CHANGE ME!!@localhost:6379'
-    redis = await aioredis.create_connection(url)
+async def app():
+    app = await get_app()
+    redis: Redis = app['redis']
 
     async def clear_queues():
-        queues = await redis.execute('keys', '*')
+        queues = await redis.keys('*')
 
         if queues:
-            await redis.execute('del', *queues)
+            await redis.delete(*queues)
 
     await clear_queues()
 
-    yield redis
+    yield app
 
     await clear_queues()
-    redis.close()
-    await redis.wait_closed()
 
 
-async def test_put_metrics_request(aiohttp_client, redis):
-    app = await get_app()
+async def test_put_metrics_request(aiohttp_client, app):
     client = await aiohttp_client(app)
 
     now = utcnow()
@@ -64,12 +61,11 @@ async def test_put_metrics_request(aiohttp_client, redis):
     assert response.status == 200
     assert await response.text() == 'OK'
 
-    assert await redis.execute('llen', 'metrics-2') == 1
-    assert await redis.execute('rpop', 'metrics-2') == get_timestamp(now) + metrics_request
+    assert await app['redis'].llen('metrics-2') == 1
+    assert await app['redis'].rpop('metrics-2') == get_timestamp(now) + metrics_request
 
 
-async def test_put_metrics_request_empty_body(aiohttp_client, redis):
-    app = await get_app()
+async def test_put_metrics_request_empty_body(aiohttp_client, app):
     client = await aiohttp_client(app)
 
     version = 2
@@ -81,11 +77,10 @@ async def test_put_metrics_request_empty_body(aiohttp_client, redis):
     assert response.status == 400
     assert await response.text() == 'Invalid request: empty body'
 
-    assert await redis.execute('llen', 'metrics-2') == 0
+    assert await app['redis'].llen('metrics-2') == 0
 
 
-async def test_put_metrics_request_invalid_hash(aiohttp_client, redis):
-    app = await get_app()
+async def test_put_metrics_request_invalid_hash(aiohttp_client, app):
     client = await aiohttp_client(app)
 
     version = 2
@@ -101,4 +96,4 @@ async def test_put_metrics_request_invalid_hash(aiohttp_client, redis):
     assert response.status == 400
     assert await response.text() == f'SHA512 mismatch: expected {bad_sha512} but got {sha512}'
 
-    assert await redis.execute('llen', 'metrics-2') == 0
+    assert await app['redis'].llen('metrics-2') == 0
