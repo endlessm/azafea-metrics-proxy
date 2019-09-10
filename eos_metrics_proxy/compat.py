@@ -16,32 +16,27 @@
 # along with eos-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from aiohttp.web import Application
-
-import aioredis
-
-from . import compat
-from . import metrics
+from aiohttp.web import Application, Request, Response
 
 
-async def on_shutdown(app: Application) -> None:
-    app['redis'].close()
-    await app['redis'].wait_closed()
+# Some old client machines run old versions of the metrics reporting code.
+#
+# Those old machines might keep retrying over and over until they succeed, potentially leading to
+# a DDoS of our service.
+#
+# This file implement compatibility views just so those old clients have a response.
+#
+# We ignore the metrics though because those clients are so old they wouldn't be interesting.
 
 
-async def get_app() -> Application:
-    app = Application()
+async def get(request: Request) -> Response:
+    return Response(text='<html>\n<body>\nOK\n</body>\n</html>\n')
 
-    compat.setup_routes(app)
-    metrics.setup_routes(app)
 
-    # TODO: Make this configurable
-    redis_host = 'localhost'
-    redis_port = 6379
-    redis_password = 'CHANGE ME!!'
+async def post(request: Request) -> Response:
+    return Response()
 
-    app['redis'] = await aioredis.create_redis_pool(
-        f'redis://:{redis_password}@{redis_host}:{redis_port}')
-    app.on_shutdown.append(on_shutdown)
 
-    return app
+def setup_routes(app: Application) -> None:
+    app.router.add_get(r'/{tail:.*}', get)
+    app.router.add_post(r'/{tail:.*}', post)
