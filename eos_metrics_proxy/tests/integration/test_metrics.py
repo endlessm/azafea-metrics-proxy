@@ -19,32 +19,9 @@
 import bz2
 import gzip
 
-from aioredis import Redis
-
 from freezegun import freeze_time
 
-import pytest
-
-from eos_metrics_proxy.app import get_app
 from eos_metrics_proxy.utils import get_timestamp, utcnow
-
-
-@pytest.fixture()
-async def app():
-    app = await get_app()
-    redis: Redis = app['redis']
-
-    async def clear_queues():
-        queues = await redis.keys('*')
-
-        if queues:
-            await redis.delete(*queues)
-
-    await clear_queues()
-
-    yield app
-
-    await clear_queues()
 
 
 async def test_put_metrics_request(aiohttp_client, app):
