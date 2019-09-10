@@ -16,6 +16,9 @@
 # along with eos-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import bz2
+import gzip
+
 from aioredis import Redis
 
 from freezegun import freeze_time
@@ -63,6 +66,53 @@ async def test_put_metrics_request(aiohttp_client, app):
 
     assert await app['redis'].llen('metrics-2') == 1
     assert await app['redis'].rpop('metrics-2') == get_timestamp(now) + metrics_request
+
+
+async def test_put_gzipped_metrics_request(aiohttp_client, app):
+    client = await aiohttp_client(app)
+
+    now = utcnow()
+    version = 2
+    sha512 = ('3eaab42c4ea4c201a726f44b82e51b52f0a587399a59c32f92b4634b60fef0c5f3fbaec705a8a6d7dad'
+              '216d48b3a948ced2be27efb4547ea3bf657d437aec838')
+    metrics_request = (b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x945w\x00\x00\x00\x00\x00\xa5E\x04'
+                       b'\xd2\xbc\xc2\x15\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
+                       b'\xff\xff(((')
+    compressed_request = gzip.compress(metrics_request)
+
+    with freeze_time(now):
+        response = await client.put(f'/{version}/{sha512}',
+                                    headers={'X-Endless-Content-Encoding': 'gzip'},
+                                    data=compressed_request)
+
+    assert response.status == 200
+    assert await response.text() == 'OK'
+
+    assert await app['redis'].llen('metrics-2') == 1
+    assert await app['redis'].rpop('metrics-2') == get_timestamp(now) + metrics_request
+
+
+async def test_put_compressed_metrics_request_unknown_compression(aiohttp_client, app):
+    client = await aiohttp_client(app)
+
+    now = utcnow()
+    version = 2
+    sha512 = ('3eaab42c4ea4c201a726f44b82e51b52f0a587399a59c32f92b4634b60fef0c5f3fbaec705a8a6d7dad'
+              '216d48b3a948ced2be27efb4547ea3bf657d437aec838')
+    metrics_request = (b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x945w\x00\x00\x00\x00\x00\xa5E\x04'
+                       b'\xd2\xbc\xc2\x15\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
+                       b'\xff\xff(((')
+    compressed_request = bz2.compress(metrics_request)
+
+    with freeze_time(now):
+        response = await client.put(f'/{version}/{sha512}',
+                                    headers={'X-Endless-Content-Encoding': 'bzip2'},
+                                    data=compressed_request)
+
+    assert response.status == 400
+    assert await response.text() == 'Unknown request encoding: bzip2'
+
+    assert await app['redis'].llen('metrics-2') == 0
 
 
 async def test_put_metrics_request_empty_body(aiohttp_client, app):

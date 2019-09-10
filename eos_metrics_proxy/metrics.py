@@ -17,6 +17,7 @@
 
 
 import hashlib
+import gzip
 
 from aiohttp.web import Application, HTTPBadRequest, Request, Response
 
@@ -28,8 +29,15 @@ from .utils import get_timestamp, utcnow
 async def new_metrics_request(request: Request) -> Response:
     # This is safe as long as the route regexp mandates an integer
     version = int(request.match_info['version'])
+    encoding = request.headers.get('X-Endless-Content-Encoding')
 
     body = await request.read()
+
+    if encoding == 'gzip':
+        body = gzip.decompress(body)
+
+    elif encoding is not None:
+        raise HTTPBadRequest(text=f'Unknown request encoding: {encoding}')
 
     if not body:
         raise HTTPBadRequest(text='Invalid request: empty body')
