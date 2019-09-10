@@ -23,6 +23,11 @@ import aioredis
 from . import metrics
 
 
+async def on_shutdown(app: Application) -> None:
+    app['redis'].close()
+    await app['redis'].wait_closed()
+
+
 async def get_app() -> Application:
     app = Application()
 
@@ -35,5 +40,6 @@ async def get_app() -> Application:
 
     app['redis'] = await aioredis.create_redis_pool(
         f'redis://:{redis_password}@{redis_host}:{redis_port}')
+    app.on_shutdown.append(on_shutdown)
 
     return app
