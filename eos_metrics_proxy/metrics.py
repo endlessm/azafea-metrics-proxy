@@ -20,7 +20,7 @@ import hashlib
 
 from aiohttp.web import Application, HTTPBadRequest, Request, Response
 
-import aioredis
+from aioredis import Redis
 
 from .utils import get_timestamp, utcnow
 
@@ -46,13 +46,8 @@ async def new_metrics_request(request: Request) -> Response:
     received_date = get_timestamp(utcnow())
     record = received_date + body
 
-    # TODO: Make this configurable
-    url = 'redis://:CHANGE ME!!@localhost:6379'
-
-    redis = await aioredis.create_connection(url)
-    await redis.execute('lpush', f'metrics-{version}', record)
-    redis.close()
-    await redis.wait_closed()
+    redis: Redis = request.app['redis']
+    await redis.lpush(f'metrics-{version}', record)
 
     return Response(text='OK')
 

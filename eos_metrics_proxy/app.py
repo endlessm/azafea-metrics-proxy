@@ -18,12 +18,22 @@
 
 from aiohttp.web import Application
 
+import aioredis
+
 from . import metrics
 
 
-def get_app() -> Application:
+async def get_app() -> Application:
     app = Application()
 
     metrics.setup_routes(app)
+
+    # TODO: Make this configurable
+    redis_host = 'localhost'
+    redis_port = 6379
+    redis_password = 'CHANGE ME!!'
+
+    app['redis'] = await aioredis.create_redis_pool(
+        f'redis://:{redis_password}@{redis_host}:{redis_port}')
 
     return app

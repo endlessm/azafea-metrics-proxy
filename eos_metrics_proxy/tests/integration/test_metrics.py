@@ -47,7 +47,7 @@ async def redis():
 
 
 async def test_put_metrics_request(aiohttp_client, redis):
-    app = get_app()
+    app = await get_app()
     client = await aiohttp_client(app)
 
     now = utcnow()
@@ -69,7 +69,7 @@ async def test_put_metrics_request(aiohttp_client, redis):
 
 
 async def test_put_metrics_request_empty_body(aiohttp_client, redis):
-    app = get_app()
+    app = await get_app()
     client = await aiohttp_client(app)
 
     version = 2
@@ -85,7 +85,7 @@ async def test_put_metrics_request_empty_body(aiohttp_client, redis):
 
 
 async def test_put_metrics_request_invalid_hash(aiohttp_client, redis):
-    app = get_app()
+    app = await get_app()
     client = await aiohttp_client(app)
 
     version = 2

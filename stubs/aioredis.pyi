@@ -18,7 +18,7 @@
 
 from asyncio.events import AbstractEventLoop
 import ssl
-from typing import Any, Awaitable, Callable, List, Optional, Tuple, Union
+from typing import Callable, List, Optional, Tuple, Type, Union
 
 
 # Address can be a URL string or a 2-tuple/2-list of host, port
@@ -34,21 +34,30 @@ _NOTSET = object()
 _Encoding = Union[str, object]
 
 
-async def create_connection(address: _Address,
+async def create_redis_pool(address: _Address,
                             *,
                             db: Optional[int] = None,
                             password: Optional[str] = None,
                             ssl: Optional[_SSLContext] = None,
                             encoding: Optional[str] = None,
+                            # FIXME: This is not technically correct, but works for our purpose
+                            commands_factory: Type[Redis] = Redis,
+                            minsize: int = 1,
+                            maxsize: int = 10,
                             parser: Optional[Callable] = None,
-                            loop: Optional[AbstractEventLoop] = None,
                             timeout: Optional[int] = None,
                             # FIXME: This is not technically correct, but works for our purpose
-                            connection_cls: Optional[RedisConnection] = None
-                            ) -> RedisConnection: ...
+                            pool_cls: Optional[Type[ConnectionsPool]] = None,
+                            # FIXME: This is not technically correct, but works for our purpose
+                            connection_cls: Optional[Type[RedisConnection]] = None,
+                            loop: Optional[AbstractEventLoop] = None,
+                            # FIXME: This is not technically correct, but works for our purpose
+                            ) -> Redis: ...
 
 
-class RedisConnection:
-    def execute(self, command: Union[bytes, str], *args: Union[bytes, str], encoding: _Encoding = _NOTSET) -> Awaitable[Any]: ...
-    def close(self) -> None: ...
-    async def wait_closed(self) -> None: ...
+class ConnectionsPool: ...
+class RedisConnection: ...
+
+
+class Redis:
+    async def lpush(self, key: Union[bytes, str], value: Union[bytes, str]) -> int: ...
