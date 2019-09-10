@@ -20,6 +20,10 @@ import hashlib
 
 from aiohttp.web import Application, HTTPBadRequest, Request, Response
 
+import aioredis
+
+from .utils import get_timestamp, utcnow
+
 
 async def new_metrics_request(request: Request) -> Response:
     # This is safe as long as the route regexp mandates an integer
@@ -36,7 +40,19 @@ async def new_metrics_request(request: Request) -> Response:
     if hash != provided_hash:
         raise HTTPBadRequest(text=f'SHA512 mismatch: expected {provided_hash} but got {hash}')
 
-    # TODO: Send to Redis
+    # On the other side of Redis, Azafea expects records to be a string of bytes made of:
+    # - the date at which the request was received, as a timestamp on 8 bytes
+    # - the serialized metrics request
+    received_date = get_timestamp(utcnow())
+    record = received_date + body
+
+    # TODO: Make this configurable
+    url = 'redis://:CHANGE ME!!@localhost:6379'
+
+    redis = await aioredis.create_connection(url)
+    await redis.execute('lpush', f'metrics-{version}', record)
+    redis.close()
+    await redis.wait_closed()
 
     return Response(text='OK')
 

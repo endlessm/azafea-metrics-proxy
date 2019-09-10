@@ -10,6 +10,7 @@ pytest-mypy = ">=0.3.3"
 
 [packages]
 aiohttp = ">= 3.5.0"
+aioredis = "*"
 
 [scripts]
 lint = "py.test --flake8 --mypy -m 'flake8 or mypy'"
