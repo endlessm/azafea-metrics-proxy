@@ -16,7 +16,14 @@
 # along with eos-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from pathlib import Path
+from typing import Mapping
+
 import pytest
+
+import toml
+
+from eos_metrics_proxy.config import Config
 
 
 def pytest_collection_modifyitems(items):
@@ -28,3 +35,26 @@ def pytest_collection_modifyitems(items):
 
         if item.nodeid.startswith('eos_metrics_proxy/tests/integration/'):
             item.add_marker(pytest.mark.integration)
+
+
+@pytest.fixture()
+def make_config_file(tmp_path):
+    config_file_path = tmp_path.joinpath('eos_metrics_proxy.conf')
+
+    def maker(d: Mapping) -> Path:
+        with config_file_path.open('w') as f:
+            toml.dump(d, f)
+
+        return config_file_path
+
+    return maker
+
+
+@pytest.fixture()
+def make_config(make_config_file):
+    def maker(d: Mapping) -> Config:
+        config_file_path = make_config_file(d)
+
+        return Config.from_file(str(config_file_path))
+
+    return maker
