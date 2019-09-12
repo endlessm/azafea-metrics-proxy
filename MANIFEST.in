@@ -1,3 +1,4 @@
 include code-of-conduct.md COPYING
 include Dockerfile .dockerignore
 include Pipfile* pyproject.toml
+recursive-include stubs *.pyi
