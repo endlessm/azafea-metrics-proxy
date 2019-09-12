@@ -1,19 +1,19 @@
 # Copyright (c) 2019 - Endless
 #
-# This file is part of eos-metrics-proxy
+# This file is part of azafea-metrics-proxy
 #
-# eos-metrics-proxy is free software: you can redistribute it and/or modify
+# azafea-metrics-proxy is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# eos-metrics-proxy is distributed in the hope that it will be useful,
+# azafea-metrics-proxy is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-# along with eos-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
+# along with azafea-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import argparse
@@ -41,10 +41,10 @@ class ExitCode(IntEnum):
 
 
 def get_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog='eos-metrics-proxy',
+    parser = argparse.ArgumentParser(prog='azafea-metrics-proxy',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('-c', '--config', default='/etc/eos-metrics-proxy/config.toml',
+    parser.add_argument('-c', '--config', default='/etc/azafea-metrics-proxy/config.toml',
                         help='Optional path to a configuration file, if needed')
 
     subs = parser.add_subparsers(title='subcommands', dest='subcommand', required=True)
@@ -53,7 +53,7 @@ def get_parser() -> argparse.ArgumentParser:
                                    help='Print the loaded configuration then exit')
     print_config.set_defaults(subcommand=do_print_config)
 
-    run = subs.add_parser('run', help='Run eos-metrics-proxy')
+    run = subs.add_parser('run', help='Run azafea-metrics-proxy')
     run.set_defaults(subcommand=do_run)
 
     return parser

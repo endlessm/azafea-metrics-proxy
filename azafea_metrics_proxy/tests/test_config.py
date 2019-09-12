@@ -1,29 +1,29 @@
 # Copyright (c) 2019 - Endless
 #
-# This file is part of eos-metrics-proxy
+# This file is part of azafea-metrics-proxy
 #
-# eos-metrics-proxy is free software: you can redistribute it and/or modify
+# azafea-metrics-proxy is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# eos-metrics-proxy is distributed in the hope that it will be useful,
+# azafea-metrics-proxy is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-# along with eos-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
+# along with azafea-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import pytest
 
-import eos_metrics_proxy.config
-from eos_metrics_proxy.logging import setup_logging
+import azafea_metrics_proxy.config
+from azafea_metrics_proxy.logging import setup_logging
 
 
 def test_defaults():
-    config = eos_metrics_proxy.config.Config()
+    config = azafea_metrics_proxy.config.Config()
 
     assert not config.main.verbose
     assert config.redis.host == 'localhost'
@@ -41,9 +41,9 @@ def test_defaults():
 
 
 def test_get_nonexistent_option():
-    config = eos_metrics_proxy.config.Config()
+    config = azafea_metrics_proxy.config.Config()
 
-    with pytest.raises(eos_metrics_proxy.config.NoSuchConfigurationError) as exc_info:
+    with pytest.raises(azafea_metrics_proxy.config.NoSuchConfigurationError) as exc_info:
         config.main.gauche
 
     assert f"No such configuration option: 'gauche'" in str(exc_info.value)
@@ -71,10 +71,10 @@ def test_override(monkeypatch, make_config):
 
 
 def test_override_with_nonexistent_file():
-    config = eos_metrics_proxy.config.Config.from_file('/no/such/file')
+    config = azafea_metrics_proxy.config.Config.from_file('/no/such/file')
 
     # Ensure we got the defaults
-    assert config == eos_metrics_proxy.config.Config()
+    assert config == azafea_metrics_proxy.config.Config()
 
 
 @pytest.mark.parametrize('value', [
@@ -82,7 +82,7 @@ def test_override_with_nonexistent_file():
     'true',
 ])
 def test_override_verbose_invalid(make_config, value):
-    with pytest.raises(eos_metrics_proxy.config.InvalidConfigurationError) as exc_info:
+    with pytest.raises(azafea_metrics_proxy.config.InvalidConfigurationError) as exc_info:
         make_config({'main': {'verbose': value}})
 
     assert ('Invalid [main] configuration:\n'
@@ -95,7 +95,7 @@ def test_override_verbose_invalid(make_config, value):
     42,
 ])
 def test_override_redis_host_invalid(make_config, value):
-    with pytest.raises(eos_metrics_proxy.config.InvalidConfigurationError) as exc_info:
+    with pytest.raises(azafea_metrics_proxy.config.InvalidConfigurationError) as exc_info:
         make_config({'redis': {'host': value}})
 
     assert ('Invalid [redis] configuration:\n'
@@ -103,7 +103,7 @@ def test_override_redis_host_invalid(make_config, value):
 
 
 def test_override_redis_host_empty(make_config):
-    with pytest.raises(eos_metrics_proxy.config.InvalidConfigurationError) as exc_info:
+    with pytest.raises(azafea_metrics_proxy.config.InvalidConfigurationError) as exc_info:
         make_config({'redis': {'host': ''}})
 
     assert ('Invalid [redis] configuration:\n'
@@ -116,7 +116,7 @@ def test_override_redis_host_empty(make_config):
     'foo',
 ])
 def test_override_redis_port_invalid(make_config, value):
-    with pytest.raises(eos_metrics_proxy.config.InvalidConfigurationError) as exc_info:
+    with pytest.raises(azafea_metrics_proxy.config.InvalidConfigurationError) as exc_info:
         make_config({'redis': {'port': value}})
 
     assert ('Invalid [redis] configuration:\n'
@@ -128,7 +128,7 @@ def test_override_redis_port_invalid(make_config, value):
     0,
 ])
 def test_override_redis_port_not_positive(make_config, value):
-    with pytest.raises(eos_metrics_proxy.config.InvalidConfigurationError) as exc_info:
+    with pytest.raises(azafea_metrics_proxy.config.InvalidConfigurationError) as exc_info:
         make_config({'redis': {'port': value}})
 
     assert ('Invalid [redis] configuration:\n'
@@ -137,7 +137,7 @@ def test_override_redis_port_not_positive(make_config, value):
 
 def test_default_passwords(capfd):
     setup_logging(verbose=False)
-    config = eos_metrics_proxy.config.Config()
+    config = azafea_metrics_proxy.config.Config()
     config.warn_about_default_passwords()
 
     capture = capfd.readouterr()

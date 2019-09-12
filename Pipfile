@@ -16,6 +16,6 @@ toml = "*"
 
 [scripts]
 lint = "py.test --flake8 --mypy -m 'flake8 or mypy'"
-proxy = "python -m eos_metrics_proxy"
-test = "py.test --cov=eos_metrics_proxy --cov-fail-under=99 --no-cov-on-fail -m 'not integration'"
-test-all = "py.test --cov=eos_metrics_proxy --cov-fail-under=99 --no-cov-on-fail"
+proxy = "python -m azafea_metrics_proxy"
+test = "py.test --cov=azafea_metrics_proxy --cov-fail-under=99 --no-cov-on-fail -m 'not integration'"
+test-all = "py.test --cov=azafea_metrics_proxy --cov-fail-under=99 --no-cov-on-fail"
