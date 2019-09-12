@@ -16,14 +16,18 @@
 # along with eos-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import hashlib
 import gzip
+import hashlib
+import logging
 
 from aiohttp.web import Application, HTTPBadRequest, Request, Response
 
 from aioredis import Redis
 
 from ..utils import get_timestamp, utcnow
+
+
+log = logging.getLogger(__name__)
 
 
 async def new_metrics_request(request: Request) -> Response:
@@ -42,6 +46,8 @@ async def new_metrics_request(request: Request) -> Response:
     if not body:
         raise HTTPBadRequest(text='Invalid request: empty body')
 
+    log.debug('Received metrics request version %s with body: %s', version, body)
+
     provided_hash = request.match_info['provided_hash']
     hash = hashlib.sha512(body).hexdigest()
 
@@ -56,6 +62,8 @@ async def new_metrics_request(request: Request) -> Response:
 
     redis: Redis = request.app['redis']
     await redis.lpush(f'metrics-{version}', record)
+
+    log.debug('Sent metrics request to Redis: %s', record)
 
     return Response(text='OK')
 
