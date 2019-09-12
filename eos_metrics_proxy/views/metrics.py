@@ -23,7 +23,7 @@ from aiohttp.web import Application, HTTPBadRequest, Request, Response
 
 from aioredis import Redis
 
-from .utils import get_timestamp, utcnow
+from ..utils import get_timestamp, utcnow
 
 
 async def new_metrics_request(request: Request) -> Response:

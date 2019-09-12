@@ -18,10 +18,10 @@
 
 from aiohttp.web import Application
 
-from . import compat
-from . import metrics
-from .config import Config
 from . import redis
+from .config import Config
+from .views import metrics
+from .views import compat
 
 
 async def on_shutdown(app: Application) -> None:
