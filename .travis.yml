@@ -1,0 +1,28 @@
+language: python
+sudo: required
+
+branches:
+  only:
+  - master
+
+python:
+- "3.7"
+
+services:
+- redis-server
+
+install:
+- pipenv install --deploy --dev
+
+before_script:
+# Set the default password for Redis, as that's what the tests expect
+- redis-cli config set requirepass 'CHANGE ME!!'
+
+matrix:
+  include:
+  - name: "Integration Tests"
+    script:
+    - pipenv run test-all
+  - name: "Lint and Type Checking"
+    script:
+    - pipenv run lint
