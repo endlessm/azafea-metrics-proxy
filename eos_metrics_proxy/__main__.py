@@ -16,9 +16,11 @@
 # along with eos-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from aiohttp.web import run_app
+import sys
 
-from .app import get_app
+from .cli import parse_args
 
 
-run_app(get_app())
+args = parse_args(sys.argv[1:])
+
+sys.exit(args.subcommand(args))

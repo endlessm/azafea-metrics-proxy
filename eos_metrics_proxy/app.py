@@ -18,10 +18,10 @@
 
 from aiohttp.web import Application
 
-import aioredis
-
 from . import compat
 from . import metrics
+from .config import Config
+from . import redis
 
 
 async def on_shutdown(app: Application) -> None:
@@ -29,19 +29,13 @@ async def on_shutdown(app: Application) -> None:
     await app['redis'].wait_closed()
 
 
-async def get_app() -> Application:
+async def get_app(config: Config) -> Application:
     app = Application()
 
     compat.setup_routes(app)
     metrics.setup_routes(app)
 
-    # TODO: Make this configurable
-    redis_host = 'localhost'
-    redis_port = 6379
-    redis_password = 'CHANGE ME!!'
-
-    app['redis'] = await aioredis.create_redis_pool(
-        f'redis://:{redis_password}@{redis_host}:{redis_port}')
+    app['redis'] = await redis.connect(config.redis.host, config.redis.port, config.redis.password)
     app.on_shutdown.append(on_shutdown)
 
     return app

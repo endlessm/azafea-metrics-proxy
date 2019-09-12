@@ -24,8 +24,10 @@ from eos_metrics_proxy.app import get_app
 
 
 @pytest.fixture()
-async def app():
-    app = await get_app()
+async def app(make_config):
+    config = make_config({})
+
+    app = await get_app(config)
     redis: Redis = app['redis']
 
     async def clear_queues():
