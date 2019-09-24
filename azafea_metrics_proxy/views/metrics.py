@@ -30,9 +30,7 @@ from ..utils import get_timestamp, utcnow
 log = logging.getLogger(__name__)
 
 
-async def new_metrics_request(request: Request) -> Response:
-    # This is safe as long as the route regexp mandates an integer
-    version = int(request.match_info['version'])
+async def put_metrics_request(request: Request) -> Response:
     encoding = request.headers.get('X-Endless-Content-Encoding')
 
     body = await request.read()
@@ -46,7 +44,7 @@ async def new_metrics_request(request: Request) -> Response:
     if not body:
         raise HTTPBadRequest(text='Invalid request: empty body')
 
-    log.debug('Received metrics request version %s with body: %s', version, body)
+    log.debug('Received metrics request version 2 with body: %s', body)
 
     provided_hash = request.match_info['provided_hash']
     hash = hashlib.sha512(body).hexdigest()
@@ -61,12 +59,19 @@ async def new_metrics_request(request: Request) -> Response:
     record = received_date + body
 
     redis: Redis = request.app['redis']
-    await redis.lpush(f'metrics-{version}', record)
+    await redis.lpush('metrics-2', record)
 
     log.debug('Sent metrics request to Redis: %s', record)
 
     return Response(text='OK')
 
 
+async def ignore_old_metrics_request(request: Request) -> Response:
+    # Return OK so clients don't retry forever
+    return Response(text='OK')
+
+
 def setup_routes(app: Application) -> None:
-    app.router.add_put(r'/{version:\d+}/{provided_hash:[0-9a-f]{128}}', new_metrics_request)
+    app.router.add_put(r'/2/{provided_hash:[0-9a-f]{128}}', put_metrics_request)
+    app.router.add_put(r'/{version:[0-1]}/{provided_hash:[0-9a-f]{128}}',
+                       ignore_old_metrics_request)
