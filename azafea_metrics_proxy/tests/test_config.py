@@ -147,7 +147,6 @@ def test_default_passwords(capfd):
 def test_non_default_passwords(capfd, make_config):
     setup_logging(verbose=False)
     config = make_config({
-        'postgresql': {'password': 'not default'},
         'redis': {'password': 'not default'},
     })
     config.warn_about_default_passwords()
