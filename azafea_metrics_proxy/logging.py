@@ -66,3 +66,6 @@ def setup_logging(*, verbose: bool = False) -> None:
     if verbose:
         # Decrease verbosity
         logging.getLogger('flake8').setLevel(logging.WARNING)
+
+    else:
+        logging.getLogger('aiohttp.access').setLevel(logging.WARNING)
