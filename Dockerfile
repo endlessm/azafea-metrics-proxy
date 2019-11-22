@@ -21,6 +21,4 @@ RUN apt --quiet --assume-yes update \
 
 COPY . .
 
-RUN pip3 install .
-
 ENTRYPOINT ["pipenv", "run", "proxy"]
