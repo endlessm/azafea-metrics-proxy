@@ -60,7 +60,7 @@ def test_print_invalid_config(capfd, make_config_file):
     assert result == azafea_metrics_proxy.cli.ExitCode.INVALID_CONFIG
 
     capture = capfd.readouterr()
-    assert "Invalid [main] configuration:\n* verbose: 'blah' is not a boolean" in capture.err
+    assert "Invalid configuration:\n* main.verbose: 'blah' is not a boolean" in capture.err
 
 
 def test_run(capfd, monkeypatch, make_config_file):
@@ -101,7 +101,7 @@ def test_run_invalid_config(capfd, make_config_file):
     assert result == azafea_metrics_proxy.cli.ExitCode.INVALID_CONFIG
 
     capture = capfd.readouterr()
-    assert "Invalid [main] configuration:\n* verbose: 'blah' is not a boolean" in capture.err
+    assert "Invalid configuration:\n* main.verbose: 'blah' is not a boolean" in capture.err
 
 
 def test_run_redis_connection_error(capfd, make_config_file):
