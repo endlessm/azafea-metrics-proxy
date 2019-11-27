@@ -40,16 +40,15 @@ DEFAULT_PASSWORD = 'CHANGE ME!!'
 
 
 class InvalidConfigurationError(Exception):
-    def __init__(self, section: str, errors: List[Dict[str, Any]]) -> None:
-        self.section = section
+    def __init__(self, errors: List[Dict[str, Any]]) -> None:
         self.errors = errors
 
     def __str__(self) -> str:
-        msg = [f'Invalid [{self.section}] configuration:']
+        msg = ['Invalid configuration:']
 
         for e in self.errors:
-            for loc in e['loc']:
-                msg.append(f"* {loc}: {e['msg']}")
+            loc = e['loc']
+            msg.append(f"* {'.'.join(loc)}: {e['msg']}")
 
         return '\n'.join(msg)
 
@@ -92,6 +91,9 @@ class Config(_Base):
     main: Main = dataclasses.field(default_factory=Main)
     redis: Redis = dataclasses.field(default_factory=Redis)
 
+    def __post_init_post_parse__(self) -> None:
+        self.warn_about_default_passwords()
+
     @classmethod
     def from_file(cls, config_file_path: str) -> 'Config':
         overrides: MutableMapping[str, Any] = {}
@@ -100,16 +102,10 @@ class Config(_Base):
             overrides = toml.load(config_file_path)
 
         try:
-            main = Main(**overrides.get('main', {}))
-        except ValidationError as e:
-            raise InvalidConfigurationError('main', e.errors())
+            return cls(**overrides)
 
-        try:
-            redis = Redis(**overrides.get('redis', {}))
         except ValidationError as e:
-            raise InvalidConfigurationError('redis', e.errors())
-
-        return cls(main=main, redis=redis)
+            raise InvalidConfigurationError(e.errors())
 
     def warn_about_default_passwords(self) -> None:
         if self.redis.password == DEFAULT_PASSWORD:
