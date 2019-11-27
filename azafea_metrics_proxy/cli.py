@@ -75,7 +75,9 @@ def do_print_config(args: argparse.Namespace) -> int:
 
     setup_logging(verbose=config.main.verbose)
 
+    print('----- BEGIN -----')
     print(config)
+    print('------ END ------')
 
     return ExitCode.OK
 

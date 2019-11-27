@@ -36,6 +36,7 @@ def test_print_config(capfd, make_config_file):
 
     capture = capfd.readouterr()
     assert capture.out.strip() == '\n'.join([
+        '----- BEGIN -----',
         '[main]',
         'verbose = false',
         '',
@@ -43,6 +44,7 @@ def test_print_config(capfd, make_config_file):
         'host = "redis-server"',
         'port = 6379',
         'password = "** hidden **"',
+        '------ END ------',
     ])
 
 
