@@ -137,8 +137,7 @@ def test_override_redis_port_not_positive(make_config, value):
 
 def test_default_passwords(capfd):
     setup_logging(verbose=False)
-    config = azafea_metrics_proxy.config.Config()
-    config.warn_about_default_passwords()
+    azafea_metrics_proxy.config.Config()
 
     capture = capfd.readouterr()
     assert 'Did you forget to change the Redis password?' in capture.err
@@ -146,10 +145,7 @@ def test_default_passwords(capfd):
 
 def test_non_default_passwords(capfd, make_config):
     setup_logging(verbose=False)
-    config = make_config({
-        'redis': {'password': 'not default'},
-    })
-    config.warn_about_default_passwords()
+    make_config({'redis': {'password': 'not default'}})
 
     capture = capfd.readouterr()
     assert 'Did you forget to change the Redis password?' not in capture.err
