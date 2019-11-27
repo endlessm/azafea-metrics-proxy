@@ -18,9 +18,11 @@
 
 import sys
 
-from .cli import parse_args
+from . import cli
 
 
-args = parse_args(sys.argv[1:])
+try:
+    cli.run_command(*sys.argv[1:])
 
-sys.exit(args.subcommand(args))
+except cli.BaseExit as e:
+    sys.exit(e.status_code)

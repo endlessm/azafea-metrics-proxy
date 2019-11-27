@@ -17,10 +17,7 @@
 
 
 import argparse
-from enum import IntEnum
 import logging
-from typing import List
-import sys
 
 from aiohttp.web import run_app
 
@@ -33,11 +30,16 @@ from . import redis
 log = logging.getLogger(__name__)
 
 
-class ExitCode(IntEnum):
-    OK = 0
-    INVALID_CONFIG = -1
-    CONNECTION_ERROR = -2
-    UNKNOWN_ERROR = -3
+class BaseExit(Exception):
+    status_code: int
+
+
+class InvalidConfigExit(BaseExit):
+    status_code: int = -1
+
+
+class ConnectionErrorExit(BaseExit):
+    status_code: int = -3
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -59,44 +61,33 @@ def get_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def parse_args(args: List[str]) -> argparse.Namespace:
-    parser = get_parser()
-
-    return parser.parse_args(args)
-
-
-def do_print_config(args: argparse.Namespace) -> int:
-    try:
-        config = Config.from_file(args.config)
-
-    except InvalidConfigurationError as e:
-        print(str(e), file=sys.stderr)
-        return ExitCode.INVALID_CONFIG
-
-    setup_logging(verbose=config.main.verbose)
-
+def do_print_config(config: Config, args: argparse.Namespace) -> None:
     print('----- BEGIN -----')
     print(config)
     print('------ END ------')
 
-    return ExitCode.OK
 
-
-def do_run(args: argparse.Namespace) -> int:
-    try:
-        config = Config.from_file(args.config)
-
-    except InvalidConfigurationError as e:
-        print(str(e), file=sys.stderr)
-        return ExitCode.INVALID_CONFIG
-
-    setup_logging(verbose=config.main.verbose)
-
+def do_run(config: Config, args: argparse.Namespace) -> None:
     try:
         run_app(get_app(config))
 
     except redis.ConnectionError as e:
         log.error('Could not connect to Redis: %s', e)
-        return ExitCode.CONNECTION_ERROR
+        raise ConnectionErrorExit()
 
-    return ExitCode.OK
+
+def run_command(*argv: str) -> None:
+    setup_logging(verbose=False)
+    parser = get_parser()
+    args = parser.parse_args(argv)
+
+    try:
+        config = Config.from_file(args.config)
+
+    except InvalidConfigurationError as e:
+        log.error(e)
+
+        raise InvalidConfigExit()
+
+    setup_logging(verbose=config.main.verbose)
+    args.subcommand(config, args)
