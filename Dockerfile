@@ -10,7 +10,7 @@ WORKDIR /opt/azafea-metrics-proxy/src
 
 COPY Pipfile.lock .
 
-RUN pipenv install --ignore-pipfile
+RUN pipenv install --ignore-pipfile --dev
 
 COPY . .
 
