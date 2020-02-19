@@ -18,9 +18,9 @@ matrix:
     before_script:
     - docker run -d --name=redis --network=host redis:5-alpine --requirepass 'CHANGE ME!!'
     script:
-    - docker run --rm --network=host --entrypoint="" amp pipenv run test-all
+    - docker run --rm --network=host amp test-all
     after_script:
     - docker rm -f redis
   - name: "Lint and Type Checking"
     script:
-    - docker run --rm --entrypoint="" amp pipenv run lint
+    - docker run --rm amp lint
