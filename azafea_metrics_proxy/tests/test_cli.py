@@ -92,4 +92,3 @@ def test_run_redis_invalid_host(capfd, make_config_file):
 
     capture = capfd.readouterr()
     assert 'Could not connect to Redis:' in capture.err
-    assert 'Name or service not known' in capture.err

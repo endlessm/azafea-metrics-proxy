@@ -1,24 +1,27 @@
-FROM ubuntu:disco
+FROM python:3.7-alpine
 
-ENV LANG C.UTF-8
+RUN pip install --no-cache-dir pipenv template && \
+    apk add --update --no-cache git build-base
 
+RUN adduser --system --shell /sbin/nologin --home /opt/azafea-metrics-proxy azafea && \
+    install -d -m 755 -o azafea /opt/azafea-metrics-proxy/src
+USER azafea
 WORKDIR /opt/azafea-metrics-proxy/src
 
 COPY Pipfile.lock .
 
-RUN apt --quiet --assume-yes update \
-    && apt --quiet --assume-yes --no-install-recommends install \
-        gcc \
-        python3 \
-        python3-dev \
-        python3-pip \
-    && pip3 install pipenv \
-    && pipenv install --ignore-pipfile \
-    && apt --quiet --assume-yes autoremove --purge \
-        gcc \
-        python3-dev \
-    && rm -rf /var/cache/{apt,debconf} /var/lib/apt/lists/* /var/log/{apt,dpkg.log}
+RUN pipenv install --ignore-pipfile --dev
 
 COPY . .
 
-ENTRYPOINT ["pipenv", "run", "proxy"]
+ENTRYPOINT ["./entrypoint", "pipenv", "run"]
+
+CMD ["proxy", "-c", "/tmp/config.toml", "run"]
+
+ENV VERBOSE=false
+ENV REDIS_HOST=localhost
+ENV REDIS_PASSWORD="CHANGE ME!!"
+
+EXPOSE 8080
+
+HEALTHCHECK CMD wget --spider --quiet http://localhost:8080/ --user-agent 'Healthcheck' || exit 1
