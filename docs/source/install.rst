@@ -79,8 +79,8 @@ Once you built the Docker image and wrote your configuration file, you can
 ensure that the Azafea metrics proxy loads your configuration correctly with
 the following command::
 
-    $ sudo docker run --volume=/etc/azafea-metrics-proxy:/etc/azafea-metrics-proxy:ro proxy print-config
+    $ sudo docker run --volume=/etc/azafea-metrics-proxy:/etc/azafea-metrics-proxy:ro azafea-metrics-proxy proxy print-config
 
 Finally, you can run the Azafea metrics proxy::
 
-    $ sudo docker run --volume=/etc/azafea-metrics-proxy:/etc/azafea-metrics-proxy:ro proxy run
+    $ sudo docker run --volume=/etc/azafea-metrics-proxy:/etc/azafea-metrics-proxy:ro azafea-metrics-proxy proxy run
