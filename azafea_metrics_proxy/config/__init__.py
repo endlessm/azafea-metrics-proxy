@@ -53,7 +53,7 @@ class InvalidConfigurationError(Exception):
         return '\n'.join(msg)
 
 
-class NoSuchConfigurationError(Exception):
+class NoSuchConfigurationError(AttributeError):
     pass
 
 

@@ -46,7 +46,7 @@ def test_get_nonexistent_option():
     with pytest.raises(azafea_metrics_proxy.config.NoSuchConfigurationError) as exc_info:
         config.main.gauche
 
-    assert f"No such configuration option: 'gauche'" in str(exc_info.value)
+    assert "No such configuration option: 'gauche'" in str(exc_info.value)
 
 
 def test_override(monkeypatch, make_config):
@@ -107,7 +107,7 @@ def test_override_redis_host_empty(make_config):
         make_config({'redis': {'host': ''}})
 
     assert ('Invalid configuration:\n'
-            f"* redis.host: '' is empty") in str(exc_info.value)
+            "* redis.host: '' is empty") in str(exc_info.value)
 
 
 @pytest.mark.parametrize('value', [
