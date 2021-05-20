@@ -58,8 +58,9 @@ async def put_metrics_request(request: Request) -> Response:
     received_date = get_timestamp(utcnow())
     record = received_date + body
 
+    version = request.match_info['version']
     redis: Redis = request.app['redis']
-    await redis.lpush('metrics-2', record)
+    await redis.lpush(f'metrics-{version}', record)
 
     log.debug('Sent metrics request to Redis: %s', record)
 
@@ -72,6 +73,6 @@ async def ignore_old_metrics_request(request: Request) -> Response:
 
 
 def setup_routes(app: Application) -> None:
-    app.router.add_put(r'/2/{provided_hash:[0-9a-f]{128}}', put_metrics_request)
+    app.router.add_put(r'/{version:[2-3]}/{provided_hash:[0-9a-f]{128}}', put_metrics_request)
     app.router.add_put(r'/{version:[0-1]}/{provided_hash:[0-9a-f]{128}}',
                        ignore_old_metrics_request)
