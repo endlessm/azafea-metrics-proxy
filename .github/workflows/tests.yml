@@ -4,6 +4,7 @@ on:
     branches:
       - master
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -52,3 +53,30 @@ jobs:
         run: docker load < docker-image.tar
       - name: Lint and Type Checking
         run: docker run --rm amp lint
+
+  push:
+    name: Upload the Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    # We only want to publish a new image when the master branch changes, not
+    # for PRs and only if tests finish successfully.
+    needs: tests
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: '${{ secrets.DOCKERHUB_USERNAME }}'
+          password: '${{ secrets.DOCKERHUB_TOKEN }}'
+
+      - name: Get Docker Image
+        uses: actions/download-artifact@v2
+        with:
+          name: image
+
+      - name: Load Docker Image
+        run: docker load < docker-image.tar
+
+      - name: Upload the image
+        run: |
+          docker tag amp endlessm/azafea-metrics-proxy:latest
+          docker push endlessm/azafea-metrics-proxy:latest
