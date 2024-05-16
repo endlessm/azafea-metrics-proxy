@@ -59,17 +59,23 @@ locally::
     $ cd azafea-metrics-proxy
     $ sudo docker build --tag azafea-metrics-proxy .
 
-At this point you will probably want to
-:doc:`write a local configuration file <configuration>` before running the
-Azafea metrics proxy.
-
-In particular, you will at the very least want to:
+At this point you need to configure the Azafea metrics proxy. In particular,
+you will at the very least want to::
 
 * change the Redis host, to point them to the IP address of its container;
 * change the Redis password.
 
-We recommend saving the configuration file as
-``/etc/azafea-metrics-proxy/config.toml`` on the production host.
+The container will automatically generate a :doc:`<configuration> file` from
+environment variables. The supported environment variables are::
+
+* ``VERBOSE``: Sets the ``main.verbose`` value. (Default: ``false``)
+* ``REDIS_HOST``: Sets the ``redis.host`` value. (Default: ``localhost``)
+* ``REDIS_PASSWORD``: Sets the ``redis.password value. (Default: ``CHANGE
+  ME!!``)
+
+Alternatively, you can :doc:`write a local configuration file <configuration>`
+before running the Azafea metrics proxy. This requires running the Docker
+container differently as described below.
 
 
 Running
@@ -77,18 +83,36 @@ Running
 
 .. note::
 
-    The commands below all assume that you're using the Docker Hub image and
-    your config file is at ``/etc/azafea-metrics-proxy/config.toml``. If you're
-    using a built image, adapt the ``docker.io/endlessm/azafea-metrics-proxy``
-    argument to use the tag you passed in ``--tag``. If you saved it elsewhere,
-    you will need to adapt the ``--volume`` argument.
+    The commands below all assume that you're using the Docker Hub image with
+    environment variable configuration. If you're using a built image, adapt
+    the ``docker.io/endlessm/azafea-metrics-proxy`` argument to use the tag you
+    passed in ``--tag``. See the end of this section if you want to use a local
+    configuration file.
 
 Once you've pulled the Docker image and written your configuration file, you
 can ensure that the Azafea metrics proxy loads your configuration correctly
 with the following command::
 
-    $ sudo docker run --volume=/etc/azafea-metrics-proxy:/etc/azafea-metrics-proxy:ro docker.io/endlessm/azafea-metrics-proxy print-config
+    $ sudo docker run --env=REDIS_HOST=redis.example.com \
+                      --env=REDIS_PASSWORD=mypassword \
+                      docker.io/endlessm/azafea-metrics-proxy \
+                      print-config
 
 Finally, you can run the Azafea metrics proxy::
 
-    $ sudo docker run --volume=/etc/azafea-metrics-proxy:/etc/azafea-metrics-proxy:ro docker.io/endlessm/azafea-metrics-proxy run
+    $ sudo docker run --env=REDIS_HOST=redis.example.com \
+                      --env=REDIS_PASSWORD=mypassword \
+                      docker.io/endlessm/azafea-metrics-proxy \
+                      run
+
+If you're using a local configuration file, 2 changes are needed. First, rather
+than passing ``--env`` to ``docker run``, the file needs to be mounted into the
+container using the ``--volume`` option. For example,
+``--volume=/path/to/config.toml:/config.toml:ro`` would mount the configuration
+file at ``/path/to/config.toml`` to ``/config.toml`` within the container and
+makes it read-only.
+
+Second, Azafea metrics proxy needs to be told about the location of the
+configuration within the container. This needs to be passed as the first
+argument in the container command using the ``-c`` option. For example, ``-c
+/config.toml print-config``.
