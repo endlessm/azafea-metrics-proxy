@@ -70,6 +70,7 @@ environment variables. The supported environment variables are::
 
 * ``VERBOSE``: Sets the ``main.verbose`` value. (Default: ``false``)
 * ``REDIS_HOST``: Sets the ``redis.host`` value. (Default: ``localhost``)
+* ``REDIS_PORT``: Sets the ``redis.port`` value. (Default: ``6379``)
 * ``REDIS_PASSWORD``: Sets the ``redis.password`` value. (Default: ``CHANGE
   ME!!``)
 * ``REDIS_SSL``: Sets the ``redis.ssl`` value. (Default: ``false``)
