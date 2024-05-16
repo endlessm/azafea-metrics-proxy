@@ -46,9 +46,14 @@ Then instead of the command above, run Redis as follows::
 Azafea Metrics Proxy
 --------------------
 
-The easiest deployment method is also to use Docker.
+The easiest deployment method is also to use Docker. The image is published on
+`Docker Hub`_ and can be downloaded by running ``sudo docker pull
+docker.io/endlessm/azafea-metrics-proxy``.
 
-You need to first get the sources and build the Docker image::
+.. _Docker Hub: https://hub.docker.com/r/endlessm/azafea-metrics-proxy
+
+If you prefer, you can first get the sources and build the Docker image
+locally::
 
     $ git clone https://github.com/endlessm/azafea-metrics-proxy
     $ cd azafea-metrics-proxy
@@ -71,16 +76,19 @@ Running
 =======
 
 .. note::
-    The commands  below all assume that your config file is at
-    ``/etc/azafea-metrics-proxy/config.toml``. If you saved it elsewhere, you
-    will need to adapt the ``--volume`` argument.
 
-Once you built the Docker image and wrote your configuration file, you can
-ensure that the Azafea metrics proxy loads your configuration correctly with
-the following command::
+    The commands below all assume that you're using the Docker Hub image and
+    your config file is at ``/etc/azafea-metrics-proxy/config.toml``. If you're
+    using a built image, adapt the ``docker.io/endlessm/azafea-metrics-proxy``
+    argument to use the tag you passed in ``--tag``. If you saved it elsewhere,
+    you will need to adapt the ``--volume`` argument.
 
-    $ sudo docker run --volume=/etc/azafea-metrics-proxy:/etc/azafea-metrics-proxy:ro azafea-metrics-proxy proxy print-config
+Once you've pulled the Docker image and written your configuration file, you
+can ensure that the Azafea metrics proxy loads your configuration correctly
+with the following command::
+
+    $ sudo docker run --volume=/etc/azafea-metrics-proxy:/etc/azafea-metrics-proxy:ro docker.io/endlessm/azafea-metrics-proxy proxy print-config
 
 Finally, you can run the Azafea metrics proxy::
 
-    $ sudo docker run --volume=/etc/azafea-metrics-proxy:/etc/azafea-metrics-proxy:ro azafea-metrics-proxy proxy run
+    $ sudo docker run --volume=/etc/azafea-metrics-proxy:/etc/azafea-metrics-proxy:ro docker.io/endlessm/azafea-metrics-proxy proxy run
