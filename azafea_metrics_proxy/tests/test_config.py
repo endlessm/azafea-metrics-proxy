@@ -37,6 +37,7 @@ def test_defaults():
         'host = "localhost"',
         'port = 6379',
         'password = "** hidden **"',
+        'ssl = false',
     ])
 
 
@@ -67,6 +68,7 @@ def test_override(monkeypatch, make_config):
         'host = "localhost"',
         'port = 42',
         'password = "** hidden **"',
+        'ssl = false',
     ])
 
 

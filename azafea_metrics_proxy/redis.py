@@ -16,18 +16,24 @@
 # along with azafea-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import logging
 import socket
 
 import aioredis
+
+log = logging.getLogger(__name__)
 
 
 class ConnectionError(Exception):
     pass
 
 
-async def connect(host: str, port: int, password: str) -> aioredis.Redis:
+async def connect(host: str, port: int, password: str, ssl: bool = False) -> aioredis.Redis:
     try:
-        return await aioredis.create_redis_pool(f'redis://:{password}@{host}:{port}')
+        conn = await aioredis.create_redis_pool(f'redis://:{password}@{host}:{port}', ssl=ssl)
 
     except socket.gaierror as e:
         raise ConnectionError(e)
+
+    log.info(f'Connected to Redis host {host}:{port}')
+    return conn
