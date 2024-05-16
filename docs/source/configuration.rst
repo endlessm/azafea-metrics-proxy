@@ -24,6 +24,7 @@ the default options:
    host = "localhost"
    port = 6379
    password = "CHANGE ME!!"
+   ssl = false
 
 
 The ``main`` table
@@ -59,3 +60,8 @@ queues.
   The password Redis expects when connecting to it.
 
   The default is ``"CHANGE ME!!"``.
+
+``ssl`` (boolean)
+  Whether to connect to the Redis server with SSL wrapping.
+
+  The default is ``false``

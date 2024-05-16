@@ -38,6 +38,7 @@ def test_print_config(capfd, make_config_file):
         'host = "redis-server"',
         'port = 6379',
         'password = "** hidden **"',
+        'ssl = false',
         '------ END ------',
     ])
 

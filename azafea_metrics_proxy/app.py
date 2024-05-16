@@ -35,7 +35,12 @@ async def get_app(config: Config) -> Application:
     compat.setup_routes(app)
     metrics.setup_routes(app)
 
-    app['redis'] = await redis.connect(config.redis.host, config.redis.port, config.redis.password)
+    app['redis'] = await redis.connect(
+        config.redis.host,
+        config.redis.port,
+        config.redis.password,
+        ssl=config.redis.ssl,
+    )
     app.on_shutdown.append(on_shutdown)
 
     return app

@@ -70,8 +70,9 @@ environment variables. The supported environment variables are::
 
 * ``VERBOSE``: Sets the ``main.verbose`` value. (Default: ``false``)
 * ``REDIS_HOST``: Sets the ``redis.host`` value. (Default: ``localhost``)
-* ``REDIS_PASSWORD``: Sets the ``redis.password value. (Default: ``CHANGE
+* ``REDIS_PASSWORD``: Sets the ``redis.password`` value. (Default: ``CHANGE
   ME!!``)
+* ``REDIS_SSL``: Sets the ``redis.ssl`` value. (Default: ``false``)
 
 Alternatively, you can :doc:`write a local configuration file <configuration>`
 before running the Azafea metrics proxy. This requires running the Docker
@@ -95,6 +96,7 @@ with the following command::
 
     $ sudo docker run --env=REDIS_HOST=redis.example.com \
                       --env=REDIS_PASSWORD=mypassword \
+                      --env=REDIS_SSL=false \
                       docker.io/endlessm/azafea-metrics-proxy \
                       print-config
 
@@ -102,6 +104,7 @@ Finally, you can run the Azafea metrics proxy::
 
     $ sudo docker run --env=REDIS_HOST=redis.example.com \
                       --env=REDIS_PASSWORD=mypassword \
+                      --env=REDIS_SSL=false \
                       docker.io/endlessm/azafea-metrics-proxy \
                       run
 
