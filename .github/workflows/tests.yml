@@ -36,7 +36,7 @@ jobs:
       - name: Install Docker Images
         run: docker run -d --name=redis --network=host redis:5-alpine --requirepass 'CHANGE ME!!'
       - name: Run Tests
-        run: docker run --rm --network=host amp test-all
+        run: docker run --rm --network=host --entrypoint="" amp pipenv run test-all
       - name: Remove Docker Images
         run: docker rm -f redis
   lint:
@@ -52,7 +52,7 @@ jobs:
       - name: Load Docker Image
         run: docker load < docker-image.tar
       - name: Lint and Type Checking
-        run: docker run --rm amp lint
+        run: docker run --rm --entrypoint="" amp pipenv run lint
 
   push:
     name: Upload the Docker image to Docker Hub

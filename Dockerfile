@@ -14,9 +14,9 @@ RUN pipenv install --ignore-pipfile --dev
 
 COPY . .
 
-ENTRYPOINT ["./entrypoint", "pipenv", "run"]
+ENTRYPOINT ["./entrypoint", "pipenv", "run", "proxy", "-c", "/tmp/config.toml"]
 
-CMD ["proxy", "-c", "/tmp/config.toml", "run"]
+CMD ["run"]
 
 ENV VERBOSE=false
 ENV REDIS_HOST=localhost
