@@ -60,13 +60,14 @@ locally::
     $ sudo docker build --tag azafea-metrics-proxy .
 
 At this point you need to configure the Azafea metrics proxy. In particular,
-you will at the very least want to::
+you will at the very least want to:
 
 * change the Redis host, to point them to the IP address of its container;
 * change the Redis password.
 
-The container will automatically generate a :doc:`<configuration> file` from
-environment variables. The supported environment variables are::
+The container will automatically generate a :doc:`configuration file
+<configuration>` from environment variables. The supported environment
+variables are:
 
 * ``VERBOSE``: Sets the ``main.verbose`` value. (Default: ``false``)
 * ``REDIS_HOST``: Sets the ``redis.host`` value. (Default: ``localhost``)
