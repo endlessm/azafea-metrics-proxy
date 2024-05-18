@@ -28,7 +28,7 @@ fixing your issue as quickly as possible.
 
 The tools required to work on the Azafea metrics proxy are the following:
 
-*   Python >= 3.7, with Pip
+*   Python >= 3.11, with Pip
 *   [Pipenv](https://docs.pipenv.org/) >= 2023.10.24
 
 Pipenv is not strictly mandatory to contribute to the Azafea metrics proxy, you

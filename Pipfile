@@ -1,6 +1,9 @@
 [pipenv]
 sort_pipfile = true
 
+[requires]
+python_version = "3.11"
+
 [dev-packages]
 flake8 = "*"
 flake8-bugbear = "*"
