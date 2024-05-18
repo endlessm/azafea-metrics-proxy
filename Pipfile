@@ -1,3 +1,6 @@
+[pipenv]
+sort_pipfile = true
+
 [dev-packages]
 flake8-bugbear = "*"
 freezegun = "*"
