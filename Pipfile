@@ -9,6 +9,7 @@ mypy = ">=0.720"
 pytest = "*"
 pytest-aiohttp = "*"
 pytest-cov = "*"
+types-toml = "*"
 
 [packages]
 aiohttp = ">= 3.5.0"
