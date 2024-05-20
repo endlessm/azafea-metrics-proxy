@@ -29,7 +29,7 @@ class _freeze_time: ...
 
 def freeze_time(time_to_freeze: Optional[Union[str, date, timedelta, Callable, Generator]] = None,
                 tz_offset: Union[int, timedelta] = 0,
-                ignore: List = None,
+                ignore: Optional[List] = None,
                 tick: bool = False,
                 as_arg: bool = False,
                 auto_tick_seconds: int = 0) -> _freeze_time: ...
