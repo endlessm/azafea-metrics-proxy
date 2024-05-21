@@ -8,7 +8,7 @@ python_version = "3.11"
 flake8 = "*"
 flake8-bugbear = "*"
 freezegun = "*"
-mypy = ">=0.720, < 0.920"
+mypy = ">=0.720"
 pytest = "*"
 pytest-aiohttp = "*"
 pytest-asyncio = "*"
@@ -18,7 +18,7 @@ types-toml = "*"
 [packages]
 aiohttp = ">= 3.5.0"
 aioredis = "~= 1.3"
-pydantic = ">= 1.1, < 1.9"
+pydantic = "~= 2.7"
 toml = "*"
 
 [scripts]
