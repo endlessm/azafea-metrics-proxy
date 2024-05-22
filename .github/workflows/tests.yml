@@ -51,8 +51,10 @@ jobs:
           name: image
       - name: Load Docker Image
         run: docker load < docker-image.tar
-      - name: Lint and Type Checking
+      - name: Lint
         run: docker run --rm --entrypoint="" amp pipenv run lint
+      - name: Type Checking
+        run: docker run --rm --entrypoint="" amp pipenv run type-check
 
   push:
     name: Upload the Docker image to Docker Hub
