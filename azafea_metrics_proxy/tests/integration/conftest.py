@@ -16,8 +16,6 @@
 # along with azafea-metrics-proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from aioredis import Redis
-
 import pytest
 
 from azafea_metrics_proxy.app import get_app
@@ -28,7 +26,7 @@ async def app(make_config):
     config = make_config({})
 
     app = await get_app(config)
-    redis: Redis = app['redis']
+    redis = app['redis']
 
     async def clear_queues():
         queues = await redis.keys('*')
