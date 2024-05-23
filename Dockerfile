@@ -1,4 +1,4 @@
-FROM python:3.7-alpine
+FROM python:3.11-alpine
 
 RUN pip install --no-cache-dir pipenv template && \
     apk add --update --no-cache git build-base

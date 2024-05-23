@@ -51,7 +51,10 @@ def test_print_invalid_config(capfd, make_config_file):
         azafea_metrics_proxy.cli.run_command('-c', str(config_file), 'print-config')
 
     capture = capfd.readouterr()
-    assert "Invalid configuration:\n* main.verbose: 'blah' is not a boolean" in capture.err
+    assert (
+        "Invalid configuration:\n"
+        "* main.verbose: Value error, 'blah' is not a boolean"
+    ) in capture.err
 
 
 def test_run(capfd, monkeypatch, make_config_file):
@@ -79,7 +82,10 @@ def test_run_invalid_config(capfd, make_config_file):
         azafea_metrics_proxy.cli.run_command('-c', str(config_file), 'run')
 
     capture = capfd.readouterr()
-    assert "Invalid configuration:\n* main.verbose: 'blah' is not a boolean" in capture.err
+    assert (
+        "Invalid configuration:\n"
+        "* main.verbose: Value error, 'blah' is not a boolean"
+    ) in capture.err
 
 
 def test_run_redis_invalid_host(capfd, make_config_file):

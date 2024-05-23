@@ -87,8 +87,10 @@ def test_override_verbose_invalid(make_config, value):
     with pytest.raises(azafea_metrics_proxy.config.InvalidConfigurationError) as exc_info:
         make_config({'main': {'verbose': value}})
 
-    assert ('Invalid configuration:\n'
-            f'* main.verbose: {value!r} is not a boolean') in str(exc_info.value)
+    assert (
+        'Invalid configuration:\n'
+        f'* main.verbose: Value error, {value!r} is not a boolean'
+    ) in str(exc_info.value)
 
 
 @pytest.mark.parametrize('value', [
@@ -100,16 +102,20 @@ def test_override_redis_host_invalid(make_config, value):
     with pytest.raises(azafea_metrics_proxy.config.InvalidConfigurationError) as exc_info:
         make_config({'redis': {'host': value}})
 
-    assert ('Invalid configuration:\n'
-            f'* redis.host: {value!r} is not a string') in str(exc_info.value)
+    assert (
+        'Invalid configuration:\n'
+        f'* redis.host: Value error, {value!r} is not a string'
+    ) in str(exc_info.value)
 
 
 def test_override_redis_host_empty(make_config):
     with pytest.raises(azafea_metrics_proxy.config.InvalidConfigurationError) as exc_info:
         make_config({'redis': {'host': ''}})
 
-    assert ('Invalid configuration:\n'
-            "* redis.host: '' is empty") in str(exc_info.value)
+    assert (
+        'Invalid configuration:\n'
+        "* redis.host: Value error, '' is empty"
+    ) in str(exc_info.value)
 
 
 @pytest.mark.parametrize('value', [
@@ -121,8 +127,10 @@ def test_override_redis_port_invalid(make_config, value):
     with pytest.raises(azafea_metrics_proxy.config.InvalidConfigurationError) as exc_info:
         make_config({'redis': {'port': value}})
 
-    assert ('Invalid configuration:\n'
-            f'* redis.port: {value!r} is not an integer') in str(exc_info.value)
+    assert (
+        'Invalid configuration:\n'
+        f'* redis.port: Value error, {value!r} is not an integer'
+    ) in str(exc_info.value)
 
 
 @pytest.mark.parametrize('value', [
@@ -133,8 +141,10 @@ def test_override_redis_port_not_positive(make_config, value):
     with pytest.raises(azafea_metrics_proxy.config.InvalidConfigurationError) as exc_info:
         make_config({'redis': {'port': value}})
 
-    assert ('Invalid configuration:\n'
-            f'* redis.port: {value!r} is not a strictly positive integer') in str(exc_info.value)
+    assert (
+        'Invalid configuration:\n'
+        f'* redis.port: Value error, {value!r} is not a strictly positive integer'
+    ) in str(exc_info.value)
 
 
 def test_default_passwords(capfd):

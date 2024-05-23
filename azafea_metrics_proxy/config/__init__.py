@@ -23,11 +23,11 @@
 import dataclasses
 import logging
 import os
-from typing import Any, Dict, List, MutableMapping
+from typing import Any, List, MutableMapping
 
-from pydantic.class_validators import validator
+from pydantic import field_validator, ValidationError
 from pydantic.dataclasses import dataclass
-from pydantic.error_wrappers import ValidationError
+from pydantic_core import ErrorDetails
 
 import toml
 
@@ -40,17 +40,31 @@ DEFAULT_PASSWORD = 'CHANGE ME!!'
 
 
 class InvalidConfigurationError(Exception):
-    def __init__(self, errors: List[Dict[str, Any]]) -> None:
+    def __init__(self, errors: List[ErrorDetails]) -> None:
         self.errors = errors
 
     def __str__(self) -> str:
         msg = ['Invalid configuration:']
 
         for e in self.errors:
-            loc = e['loc']
-            msg.append(f"* {'.'.join(loc)}: {e['msg']}")
+            loc = self._loc_str(e)
+            msg.append(f"* {loc}: {e['msg']}")
 
         return '\n'.join(msg)
+
+    # The loc field in ErrorDetails is a tuple of strings and ints.
+    # https://docs.pydantic.dev/latest/errors/errors/#customize-error-messages
+    @staticmethod
+    def _loc_str(details: ErrorDetails) -> str:
+        path = ''
+        for i, element in enumerate(details['loc']):
+            if isinstance(element, str):
+                if i > 0:
+                    path += '.'
+                path += element
+            else:  # pragma: no cover (our config does not use lists)
+                path += f'[{element}]'
+        return path
 
 
 class NoSuchConfigurationError(AttributeError):
@@ -66,7 +80,7 @@ class _Base:
 class Main(_Base):
     verbose: bool = False
 
-    @validator('verbose', pre=True)
+    @field_validator('verbose', mode='before')
     def verbose_is_boolean(cls, value: Any) -> bool:
         return is_boolean(value)
 
@@ -78,11 +92,11 @@ class Redis(_Base):
     password: str = DEFAULT_PASSWORD
     ssl: bool = False
 
-    @validator('host', pre=True)
+    @field_validator('host', mode='before')
     def host_is_non_empty_string(cls, value: Any) -> str:
         return is_non_empty_string(value)
 
-    @validator('port', pre=True)
+    @field_validator('port', mode='before')
     def port_is_strictly_positive_integer(cls, value: Any) -> int:
         return is_strictly_positive_integer(value)
 
@@ -92,7 +106,7 @@ class Config(_Base):
     main: Main = dataclasses.field(default_factory=Main)
     redis: Redis = dataclasses.field(default_factory=Redis)
 
-    def __post_init_post_parse__(self) -> None:
+    def __post_init__(self) -> None:
         self.warn_about_default_passwords()
 
     @classmethod
