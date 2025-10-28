@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Get Docker Image
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: image
       - name: Load Docker Image
@@ -46,7 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Get Docker Image
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: image
       - name: Load Docker Image
@@ -71,7 +71,7 @@ jobs:
           password: '${{ secrets.DOCKERHUB_TOKEN }}'
 
       - name: Get Docker Image
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: image
 
